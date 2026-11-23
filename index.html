@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEX | Student Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>ACADEX</h2>
+    <p class="subtitle">STUDENT MANAGEMENT</p>
+
+    <nav>
+        <button onclick="showPage('dashboard')">Dashboard</button>
+        <button onclick="showPage('records')">Student Records</button>
+        <button onclick="showPage('add')">Add Student</button>
+    </nav>
+
+    <div class="side-footer">
+        Academic Management System
+    </div>
+</div>
+
+<div class="main">
+
+    <header>
+        <div>
+            <small>ACADEX / OVERVIEW</small>
+            <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <span class="online">● SYSTEM ONLINE</span>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page">
+
+        <div class="welcome">
+            <div>
+                <h2>Welcome to ACADEX!</h2>
+                <p>Manage student records and academic performance.</p>
+            </div>
+            <button onclick="showPage('add')">+ Add Student</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <p>Total Students</p>
+                <h2 id="totalStudents">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Class Average</p>
+                <h2 id="classAverage">0.00</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Passed</p>
+                <h2 id="passedStudents">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <p>Failed</p>
+                <h2 id="failedStudents">0</h2>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Recent Student Records</h3>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>1st Sem</th>
+                            <th>2nd Sem</th>
+                            <th>General Average</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentRecords"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- STUDENT RECORDS -->
+    <section id="records" class="page hidden">
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h3>Student Records</h3>
+                    <p>View and manage student information.</p>
+                </div>
+                <button onclick="showPage('add')">+ Add Student</button>
+            </div>
+
+            <input
+                type="text"
+                id="search"
+                placeholder="Search student name or ID..."
+                oninput="renderRecords()"
+            >
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>1st Sem</th>
+                            <th>2nd Sem</th>
+                            <th>General Average</th>
+                            <th>Remarks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentRecords"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ADD STUDENT -->
+    <section id="add" class="page hidden">
+
+        <div class="panel">
+            <h3 id="formTitle">Add Student Record</h3>
+            <p>Enter the student's academic information.</p>
+
+            <form id="studentForm">
+
+                <label>Full Name</label>
+                <input type="text" id="studentName"
+                       placeholder="Enter full name" maxlength="49" required>
+
+                <div class="semester-container">
+
+                    <div class="semester">
+                        <h3>FIRST SEMESTER</h3>
+
+                        <h4>Quizzes (20 points each)</h4>
+                        <div id="firstQuizzes"></div>
+
+                        <h4>Activities (30 points each)</h4>
+                        <div id="firstActivities"></div>
+
+                        <label>Midterm Examination (100 points)</label>
+                        <input type="number" id="firstExam"
+                               min="0" max="100" required>
+                    </div>
+
+                    <div class="semester">
+                        <h3>SECOND SEMESTER</h3>
+
+                        <h4>Quizzes (20 points each)</h4>
+                        <div id="secondQuizzes"></div>
+
+                        <h4>Activities (30 points each)</h4>
+                        <div id="secondActivities"></div>
+
+                        <label>Midterm Examination (100 points)</label>
+                        <input type="number" id="secondExam"
+                               min="0" max="100" required>
+                    </div>
+
+                </div>
+
+                <p class="note">
+                    Grading System: Quizzes 25% | Activities 25% |
+                    Examination 50%
+                </p>
+
+                <div class="form-buttons">
+                    <button type="button" class="cancel"
+                            onclick="showPage('records')">Cancel</button>
+                    <button type="submit" id="saveButton">
+                        Save Student
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </section>
+
+    <!-- STUDENT DETAILS -->
+    <section id="details" class="page hidden">
+        <div class="panel" id="studentDetails"></div>
+    </section>
+
+    <footer>
+        ACADEX © 2026 | Student Academic Management System
+    </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
