@@ -1,37 +1,40 @@
 
-// ==========================================
-// ACADEX - STUDENT GRADE MANAGEMENT SYSTEM
-// ==========================================
-
-const MAX_STUDENTS = 20;
-const PASSING_GRADE = 75;
-
-let students = JSON.parse(localStorage.getItem("acadexStudents")) || [];
+let students = [];
 let editingId = null;
 let sortDescending = true;
 
-// ==========================================
-// SAVE DATA
-// ==========================================
+const MAX_STUDENTS = 20;
 
-function saveData() {
-    localStorage.setItem("acadexStudents", JSON.stringify(students));
+// CREATE SCORE INPUTS
+
+function createInputs() {
+    ["first", "second"].forEach(sem => {
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(sem + "Quizzes").innerHTML += `
+                <label>Quiz ${i} (20 points)</label>
+                <input type="number" id="${sem}Q${i}"
+                       min="0" max="20" step="0.01" required>
+            `;
+
+            document.getElementById(sem + "Activities").innerHTML += `
+                <label>Activity ${i} (30 points)</label>
+                <input type="number" id="${sem}A${i}"
+                       min="0" max="30" step="0.01" required>
+            `;
+        }
+    });
 }
 
-// ==========================================
+createInputs();
+
 // PAGE NAVIGATION
-// ==========================================
 
 function showPage(page) {
-    document.querySelectorAll(".page").forEach(section => {
-        section.classList.add("hidden");
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.add("hidden");
     });
 
-    const selectedPage = document.getElementById(page);
-
-    if (!selectedPage) return;
-
-    selectedPage.classList.remove("hidden");
+    document.getElementById(page).classList.remove("hidden");
 
     const titles = {
         dashboard: "Dashboard",
@@ -42,23 +45,18 @@ function showPage(page) {
 
     document.getElementById("pageTitle").textContent = titles[page];
 
-    if (page === "dashboard") {
+    if (page === "dashboard" || page === "records") {
         updateDashboard();
-    }
-
-    if (page === "records") {
         renderRecords();
     }
 }
 
-// ==========================================
-// PREPARE ADD STUDENT FORM
-// ==========================================
+// PREPARE ADD FORM
 
 function prepareAddForm() {
-    editingId = null;
+    if (editingId !== null) return;
 
-    document.getElementById("studentForm").reset();
+    resetForm();
 
     document.getElementById("formTitle").textContent =
         "Add Student Record";
@@ -67,9 +65,7 @@ function prepareAddForm() {
         "Save Student";
 }
 
-// ==========================================
 // RESET FORM
-// ==========================================
 
 function resetForm() {
     document.getElementById("studentForm").reset();
@@ -83,70 +79,13 @@ function resetForm() {
         "Save Student";
 }
 
-// ==========================================
-// CREATE QUIZ AND ACTIVITY INPUTS
-// ==========================================
-
-function createInputs() {
-    ["first", "second"].forEach(sem => {
-
-        const quizContainer =
-            document.getElementById(sem + "Quizzes");
-
-        const activityContainer =
-            document.getElementById(sem + "Activities");
-
-        quizContainer.innerHTML = "";
-        activityContainer.innerHTML = "";
-
-        for (let i = 1; i <= 5; i++) {
-
-            quizContainer.innerHTML += `
-                <label for="${sem}Q${i}">
-                    Quiz ${i} (20 points)
-                </label>
-
-                <input
-                    type="number"
-                    id="${sem}Q${i}"
-                    min="0"
-                    max="20"
-                    step="0.01"
-                    required
-                >
-            `;
-
-            activityContainer.innerHTML += `
-                <label for="${sem}A${i}">
-                    Activity ${i} (30 points)
-                </label>
-
-                <input
-                    type="number"
-                    id="${sem}A${i}"
-                    min="0"
-                    max="30"
-                    step="0.01"
-                    required
-                >
-            `;
-        }
-    });
-}
-
-createInputs();
-
-// ==========================================
-// GET STUDENT SCORES
-// ==========================================
+// GET SCORES
 
 function getScores(sem) {
-
-    const quizzes = [];
-    const activities = [];
+    let quizzes = [];
+    let activities = [];
 
     for (let i = 1; i <= 5; i++) {
-
         quizzes.push(
             Number(document.getElementById(sem + "Q" + i).value)
         );
@@ -159,64 +98,30 @@ function getScores(sem) {
     return {
         quizzes,
         activities,
-        exam: Number(
-            document.getElementById(sem + "Exam").value
-        )
+        exam: Number(document.getElementById(sem + "Exam").value)
     };
 }
 
-// ==========================================
 // VALIDATE SCORES
-// ==========================================
 
-function validateScores(data) {
-
-    if (
-        data.quizzes.length !== 5 ||
-        data.activities.length !== 5
-    ) {
-        return false;
-    }
-
-    if (data.quizzes.some(score =>
-        !Number.isFinite(score) || score < 0 || score > 20
-    )) {
-        return false;
-    }
-
-    if (data.activities.some(score =>
-        !Number.isFinite(score) || score < 0 || score > 30
-    )) {
-        return false;
-    }
-
-    if (
-        !Number.isFinite(data.exam) ||
-        data.exam < 0 ||
-        data.exam > 100
-    ) {
-        return false;
-    }
-
-    return true;
+function validScores(data) {
+    return (
+        data.quizzes.every(n => Number.isFinite(n) && n >= 0 && n <= 20) &&
+        data.activities.every(n => Number.isFinite(n) && n >= 0 && n <= 30) &&
+        Number.isFinite(data.exam) &&
+        data.exam >= 0 &&
+        data.exam <= 100
+    );
 }
 
-// ==========================================
-// CALCULATE SEMESTER AVERAGE
-// ==========================================
+// CALCULATE SEMESTER GRADE
 
 function calculateSemester(data) {
-
-    const quizTotal =
-        data.quizzes.reduce((a, b) => a + b, 0);
-
-    const activityTotal =
-        data.activities.reduce((a, b) => a + b, 0);
+    const quizTotal = data.quizzes.reduce((a, b) => a + b, 0);
+    const activityTotal = data.activities.reduce((a, b) => a + b, 0);
 
     const quizGrade = (quizTotal / 100) * 25;
-
     const activityGrade = (activityTotal / 150) * 25;
-
     const examGrade = (data.exam / 100) * 50;
 
     return Number(
@@ -224,143 +129,94 @@ function calculateSemester(data) {
     );
 }
 
-// ==========================================
-// SAVE OR UPDATE STUDENT
-// ==========================================
+// SAVE STUDENT
 
-document.getElementById("studentForm").addEventListener(
-    "submit",
-    function(event) {
+document.getElementById("studentForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-        event.preventDefault();
+    const name = document.getElementById("studentName").value.trim();
+    const id = document.getElementById("studentId").value.trim();
 
-        const name =
-            document.getElementById("studentName").value.trim();
-
-        const id =
-            document.getElementById("studentId").value.trim();
-
-        // Validate name
-
-        if (!name) {
-            alert("Please enter the student's full name.");
-            return;
-        }
-
-        // Validate student ID
-
-        if (!/^139\d{4}$/.test(id)) {
-            alert("Student ID must contain exactly 7 digits and begin with 139.");
-            return;
-        }
-
-        // Check duplicate ID
-
-        const duplicate = students.some(student =>
-            student.id === id && student.id !== editingId
-        );
-
-        if (duplicate) {
-            alert("This Student ID already exists.");
-            return;
-        }
-
-        // Check maximum records
-
-        if (!editingId && students.length >= MAX_STUDENTS) {
-            alert("Maximum of 20 student records reached.");
-            return;
-        }
-
-        // Get assessment scores
-
-        const firstSem = getScores("first");
-        const secondSem = getScores("second");
-
-        if (
-            !validateScores(firstSem) ||
-            !validateScores(secondSem)
-        ) {
-            alert("Please enter valid scores within the allowed points.");
-            return;
-        }
-
-        // Calculate grades
-
-        const firstAverage = calculateSemester(firstSem);
-
-        const secondAverage = calculateSemester(secondSem);
-
-        const generalAverage = Number(
-            ((firstAverage + secondAverage) / 2).toFixed(2)
-        );
-
-        // Create student object
-
-        const student = {
-            id,
-            name,
-            firstSem,
-            secondSem,
-            firstAverage,
-            secondAverage,
-            generalAverage,
-            remarks: generalAverage >= PASSING_GRADE
-                ? "PASSED"
-                : "FAILED"
-        };
-
-        // Add or update record
-
-        if (editingId) {
-
-            const index = students.findIndex(
-                s => s.id === editingId
-            );
-
-            if (index !== -1) {
-                students[index] = student;
-            }
-
-            alert("Student record successfully updated!");
-
-        } else {
-
-            students.push(student);
-
-            alert(
-                "Student record successfully saved!\nStudent ID: " + id
-            );
-        }
-
-        saveData();
-
-        resetForm();
-
-        updateDashboard();
-
-        renderRecords();
-
-        showPage("records");
+    if (!name) {
+        alert("Please enter the student's full name.");
+        return;
     }
-);
 
-// ==========================================
+    if (!/^139\d{4}$/.test(id)) {
+        alert("Student ID must contain exactly 7 digits and start with 139.");
+        return;
+    }
+
+    const duplicate = students.some(s =>
+        s.id === id && s.id !== editingId
+    );
+
+    if (duplicate) {
+        alert("This Student ID already exists.");
+        return;
+    }
+
+    if (editingId === null && students.length >= MAX_STUDENTS) {
+        alert("Maximum of 20 student records reached.");
+        return;
+    }
+
+    const firstSem = getScores("first");
+    const secondSem = getScores("second");
+
+    if (!validScores(firstSem) || !validScores(secondSem)) {
+        alert("Please enter valid scores within the specified maximum points.");
+        return;
+    }
+
+    const firstAverage = calculateSemester(firstSem);
+    const secondAverage = calculateSemester(secondSem);
+
+    const generalAverage = Number(
+        ((firstAverage + secondAverage) / 2).toFixed(2)
+    );
+
+    const student = {
+        id,
+        name,
+        firstSem,
+        secondSem,
+        firstAverage,
+        secondAverage,
+        generalAverage,
+        remarks: generalAverage >= 75 ? "PASSED" : "FAILED"
+    };
+
+    if (editingId !== null) {
+        const index = students.findIndex(s => s.id === editingId);
+
+        if (index !== -1) {
+            students[index] = student;
+        }
+
+        alert("Student record successfully updated!");
+    } else {
+        students.push(student);
+
+        alert("Student record successfully saved!");
+    }
+
+    resetForm();
+    updateDashboard();
+    renderRecords();
+    showPage("records");
+});
+
 // UPDATE DASHBOARD
-// ==========================================
 
 function updateDashboard() {
-
     const total = students.length;
 
-    const average = total > 0
-        ? students.reduce(
-            (sum, s) => sum + s.generalAverage, 0
-        ) / total
+    const average = total
+        ? students.reduce((sum, s) => sum + s.generalAverage, 0) / total
         : 0;
 
-    document.getElementById("totalStudents").textContent =
-        total;
+    document.getElementById("totalStudents").textContent = total;
 
     document.getElementById("classAverage").textContent =
         average.toFixed(2);
@@ -389,17 +245,10 @@ function updateDashboard() {
         `<tr><td colspan="6">No records available.</td></tr>`;
 }
 
-// ==========================================
-// SEARCH STUDENT RECORDS
-// ==========================================
+// DISPLAY STUDENT RECORDS
 
 function renderRecords() {
-
-    const searchInput = document.getElementById("search");
-
-    const search = searchInput
-        ? searchInput.value.toLowerCase().trim()
-        : "";
+    const search = document.getElementById("search").value.toLowerCase();
 
     const filtered = students.filter(s =>
         s.name.toLowerCase().includes(search) ||
@@ -421,85 +270,49 @@ function renderRecords() {
                 </td>
                 <td>
                     <button class="action"
-                        onclick="viewStudent('${s.id}')">
-                        View
-                    </button>
+                        onclick="viewStudent('${s.id}')">View</button>
 
                     <button class="action"
-                        onclick="editStudent('${s.id}')">
-                        Edit
-                    </button>
+                        onclick="editStudent('${s.id}')">Edit</button>
 
                     <button class="action delete"
-                        onclick="deleteStudent('${s.id}')">
-                        Delete
-                    </button>
+                        onclick="deleteStudent('${s.id}')">Delete</button>
                 </td>
             </tr>
         `).join("") ||
         `<tr><td colspan="7">No student records found.</td></tr>`;
 }
 
-// ==========================================
-// SORT STUDENTS USING BUBBLE SORT
-// ==========================================
+// SEARCH AND SORT
 
 function sortStudents() {
-
-    for (let i = 0; i < students.length - 1; i++) {
-
-        for (let j = 0; j < students.length - i - 1; j++) {
-
-            const shouldSwap = sortDescending
-                ? students[j].generalAverage <
-                  students[j + 1].generalAverage
-                : students[j].generalAverage >
-                  students[j + 1].generalAverage;
-
-            if (shouldSwap) {
-
-                const temp = students[j];
-
-                students[j] = students[j + 1];
-
-                students[j + 1] = temp;
-            }
-        }
-    }
-
     sortDescending = !sortDescending;
+
+    students.sort((a, b) =>
+        sortDescending
+            ? b.generalAverage - a.generalAverage
+            : a.generalAverage - b.generalAverage
+    );
+
+    renderRecords();
 
     const button = document.querySelector(".secondary");
 
-    if (button) {
-        button.textContent = sortDescending
-            ? "Sort by General Average ↓"
-            : "Sort by General Average ↑";
-    }
-
-    saveData();
-
-    renderRecords();
+    button.textContent = sortDescending
+        ? "Sort by General Average ↓"
+        : "Sort by General Average ↑";
 }
 
-// ==========================================
-// VIEW STUDENT DETAILS
-// ==========================================
+// VIEW STUDENT
 
 function viewStudent(id) {
-
     const s = students.find(student => student.id === id);
 
-    if (!s) {
-        alert("Student record not found.");
-        return;
-    }
+    if (!s) return;
 
     function semesterHTML(title, sem, average) {
-
         return `
             <div class="detail-section">
-
                 <h3>${title}</h3>
 
                 <h4>Quizzes</h4>
@@ -517,92 +330,58 @@ function viewStudent(id) {
                 <p>Midterm Examination: ${sem.exam}/100</p>
 
                 <p><b>Semester Average: ${average.toFixed(2)}</b></p>
-
             </div>
         `;
     }
 
     document.getElementById("studentDetails").innerHTML = `
-
         <h2>${escapeHTML(s.name)}</h2>
 
         <p>Student ID: ${escapeHTML(s.id)}</p>
 
-        ${semesterHTML(
-            "First Semester",
-            s.firstSem,
-            s.firstAverage
-        )}
+        ${semesterHTML("First Semester", s.firstSem, s.firstAverage)}
 
-        ${semesterHTML(
-            "Second Semester",
-            s.secondSem,
-            s.secondAverage
-        )}
+        ${semesterHTML("Second Semester", s.secondSem, s.secondAverage)}
 
         <h3>General Average: ${s.generalAverage.toFixed(2)}</h3>
 
-        <p>Remarks: <b>${s.remarks}</b></p>
+        <p>
+            Remarks:
+            <b class="${s.remarks.toLowerCase()}">${s.remarks}</b>
+        </p>
 
-        <div class="form-buttons">
-
-            <button class="cancel"
-                onclick="showPage('records')">
-                Back
-            </button>
-
-            <button type="button"
-                onclick="editStudent('${s.id}')">
-                Edit Student
-            </button>
-
-        </div>
+        <button class="secondary" onclick="showPage('records')">
+            Back to Student Records
+        </button>
     `;
 
     showPage("details");
 }
 
-// ==========================================
 // EDIT STUDENT
-// ==========================================
 
 function editStudent(id) {
-
     const s = students.find(student => student.id === id);
 
-    if (!s) {
-        alert("Student record not found.");
-        return;
-    }
+    if (!s) return;
 
     editingId = id;
 
     document.getElementById("studentName").value = s.name;
-
     document.getElementById("studentId").value = s.id;
 
     ["first", "second"].forEach((sem, index) => {
+        const data = index === 0 ? s.firstSem : s.secondSem;
 
-        const data = index === 0
-            ? s.firstSem
-            : s.secondSem;
-
-        data.quizzes.forEach((value, i) => {
-
-            document.getElementById(
-                sem + "Q" + (i + 1)
-            ).value = value;
+        data.quizzes.forEach((v, i) => {
+            document.getElementById(sem + "Q" + (i + 1)).value = v;
         });
 
-        data.activities.forEach((value, i) => {
-
-            document.getElementById(
-                sem + "A" + (i + 1)
-            ).value = value;
+        data.activities.forEach((v, i) => {
+            document.getElementById(sem + "A" + (i + 1)).value = v;
         });
 
-        document.getElementById(sem + "Exam").value =
-            data.exam;
+        document.getElementById(sem + "Exam").value = data.exam;
     });
 
     document.getElementById("formTitle").textContent =
@@ -614,59 +393,36 @@ function editStudent(id) {
     showPage("add");
 }
 
-// ==========================================
 // DELETE STUDENT
-// ==========================================
 
 function deleteStudent(id) {
-
     const s = students.find(student => student.id === id);
 
-    if (!s) {
-        alert("Student record not found.");
-        return;
-    }
+    if (!s) return;
 
-    const confirmation = confirm(
-        "Are you sure you want to delete the record of " +
-        s.name + "?"
-    );
-
-    if (confirmation) {
-
-        students = students.filter(student =>
-            student.id !== id
-        );
-
-        saveData();
+    if (confirm("Are you sure you want to delete " + s.name + "?")) {
+        students = students.filter(student => student.id !== id);
 
         updateDashboard();
-
         renderRecords();
 
-        alert("Student record successfully deleted!");
+        alert("Student record successfully deleted.");
     }
 }
 
-// ==========================================
-// ESCAPE HTML INPUT
-// ==========================================
+// HTML SAFETY
 
 function escapeHTML(value) {
-
-    return String(value).replace(/[&<>"']/g, character => ({
+    return String(value).replace(/[&<>"']/g, c => ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;"
-    })[character]);
+    })[c]);
 }
 
-// ==========================================
-// INITIALIZE SYSTEM
-// ==========================================
+// INITIAL DISPLAY
 
 updateDashboard();
 renderRecords();
-showPage("dashboard");
