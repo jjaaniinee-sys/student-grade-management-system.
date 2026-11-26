@@ -1,38 +1,318 @@
-<!-- FIRST SEMESTER GRADING -->
-<div class="semester-container">
 
-    <div class="semester">
-        <h3>MIDTERM PERIOD</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <h4>Quizzes (20 points each)</h4>
-        <div id="midtermQuizzes"></div>
+    <title>ACADEX | Student Grade Management</title>
 
-        <h4>Activities (30 points each)</h4>
-        <div id="midtermActivities"></div>
+    <link rel="stylesheet" href="./style.css">
+</head>
 
-        <label>Midterm Examination (100 points)</label>
-        <input type="number" id="midtermExam"
-               min="0" max="100" step="0.01" required>
-    </div>
+<body>
 
-    <div class="semester">
-        <h3>FINALS PERIOD</h3>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>ACADEX</h2>
+        <p class="subtitle">STUDENT GRADE MANAGEMENT</p>
 
-        <h4>Quizzes (20 points each)</h4>
-        <div id="finalsQuizzes"></div>
+        <nav>
+            <button onclick="showPage('dashboard')">Dashboard</button>
+            <button onclick="showPage('records')">Student Records</button>
+            <button onclick="openAddForm()">Add Student</button>
+        </nav>
 
-        <h4>Activities (30 points each)</h4>
-        <div id="finalsActivities"></div>
+        <div class="side-footer">
+            Academic Management System
+        </div>
+    </aside>
 
-        <label>Final Examination (100 points)</label>
-        <input type="number" id="finalsExam"
-               min="0" max="100" step="0.01" required>
-    </div>
+    <!-- MAIN CONTENT -->
+    <main class="main">
 
-</div>
+        <header>
+            <div>
+                <small>ACADEX / OVERVIEW</small>
+                <h1 id="pageTitle">Dashboard</h1>
+            </div>
 
-<div class="first-semester-summary">
-    <h3>FIRST SEMESTER SUMMARY</h3>
-    <p>Midterm Period Average + Finals Period Average ÷ 2</p>
-    <p>Passing Grade: 75</p>
-</div>
+            <span class="online">● SYSTEM ONLINE</span>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page">
+
+            <div class="welcome">
+                <div>
+                    <h2>Welcome to ACADEX!</h2>
+                    <p>Manage student records and academic performance.</p>
+                </div>
+
+                <button onclick="openAddForm()">+ Add Student</button>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <p>Total Students</p>
+                    <h2 id="totalStudents">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Class Average</p>
+                    <h2 id="classAverage">0.00</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Passed</p>
+                    <h2 id="passedStudents">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Failed</p>
+                    <h2 id="failedStudents">0</h2>
+                </div>
+
+            </div>
+
+            <div class="panel">
+                <h3>Recent Student Records</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Full Name</th>
+                                <th>Midterm</th>
+                                <th>Finals</th>
+                                <th>First Semester Average</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recentRecords">
+                            <tr>
+                                <td colspan="6">No records available.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- STUDENT RECORDS -->
+        <section id="records" class="page hidden">
+
+            <div class="panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <h3>Student Records</h3>
+                        <p>View and manage student information.</p>
+                    </div>
+
+                    <button onclick="openAddForm()">+ Add Student</button>
+                </div>
+
+                <input
+                    type="text"
+                    id="search"
+                    placeholder="Search student name or ID..."
+                    oninput="renderRecords()"
+                >
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Full Name</th>
+                                <th>Midterm</th>
+                                <th>Finals</th>
+                                <th>First Semester Average</th>
+                                <th>Remarks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="studentRecords">
+                            <tr>
+                                <td colspan="7">No student records available.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ADD / EDIT STUDENT -->
+        <section id="add" class="page hidden">
+
+            <div class="panel">
+
+                <h3 id="formTitle">Add Student Record</h3>
+                <p>Enter the student's information and grades.</p>
+
+                <form id="studentForm">
+
+                    <div class="student-information">
+
+                        <label for="studentId">Student ID</label>
+
+                        <input
+                            type="text"
+                            id="studentId"
+                            placeholder="Example: 1391618"
+                            maxlength="7"
+                            inputmode="numeric"
+                            pattern="139[0-9]{4}"
+                            title="Enter exactly 7 digits starting with 139."
+                            required
+                        >
+
+                        <label for="studentName">Full Name</label>
+
+                        <input
+                            type="text"
+                            id="studentName"
+                            placeholder="Enter student's full name"
+                            maxlength="49"
+                            required
+                        >
+
+                    </div>
+
+                    <!-- FIRST SEMESTER -->
+                    <div class="first-semester-heading">
+                        <h2>FIRST SEMESTER</h2>
+                        <p>Academic performance and grade assessment</p>
+                    </div>
+
+                    <div class="semester-container">
+
+                        <!-- MIDTERM PERIOD -->
+                        <div class="semester">
+
+                            <h3>MIDTERM PERIOD</h3>
+
+                            <h4>Quizzes (20 points each)</h4>
+                            <div id="midtermQuizzes"></div>
+
+                            <h4>Activities (30 points each)</h4>
+                            <div id="midtermActivities"></div>
+
+                            <label for="midtermExam">
+                                Midterm Examination (100 points)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="midtermExam"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                required
+                            >
+
+                        </div>
+
+                        <!-- FINALS PERIOD -->
+                        <div class="semester">
+
+                            <h3>FINALS PERIOD</h3>
+
+                            <h4>Quizzes (20 points each)</h4>
+                            <div id="finalsQuizzes"></div>
+
+                            <h4>Activities (30 points each)</h4>
+                            <div id="finalsActivities"></div>
+
+                            <label for="finalsExam">
+                                Final Examination (100 points)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="finalsExam"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <!-- FIRST SEMESTER SUMMARY -->
+                    <div class="first-semester-summary">
+
+                        <h3>FIRST SEMESTER SUMMARY</h3>
+
+                        <p>
+                            Midterm Period Average: 50%
+                        </p>
+
+                        <p>
+                            Finals Period Average: 50%
+                        </p>
+
+                        <p>
+                            First Semester Average =
+                            (Midterm Average + Finals Average) ÷ 2
+                        </p>
+
+                        <p>
+                            Passing Grade: 75
+                        </p>
+
+                    </div>
+
+                    <div class="note">
+                        <strong>Grading Components per Period:</strong>
+                        Quizzes – 25% |
+                        Activities – 25% |
+                        Examination – 50%
+                    </div>
+
+                    <div class="form-buttons">
+
+                        <button
+                            type="button"
+                            class="cancel"
+                            onclick="cancelForm()"
+                        >
+                            Cancel
+                        </button>
+
+                        <button type="submit" id="saveButton">
+                            Save Student
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+
+        <!-- STUDENT DETAILS -->
+        <section id="details" class="page hidden">
+            <div class="panel" id="studentDetails"></div>
+        </section>
+
+        <footer>
+            ACADEX © 2026 | Student Grade Management System
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT -->
+    <script src="./script.js"></script>
+
+</body>
+</html>
