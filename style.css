@@ -30,7 +30,8 @@ body {
 .subtitle {
     font-size: 9px;
     color: #aebbd0;
-    margin: 5px 0 45px;
+    margin-top: 5px;
+    margin-bottom: 45px;
     letter-spacing: 2px;
 }
 
@@ -42,12 +43,13 @@ nav {
 
 nav button {
     background: transparent;
-    border: 0;
+    border: none;
     color: #cbd5e3;
     padding: 14px;
     text-align: left;
     cursor: pointer;
     border-radius: 7px;
+    font-size: 14px;
 }
 
 nav button:hover {
@@ -58,10 +60,11 @@ nav button:hover {
 .side-footer {
     position: absolute;
     bottom: 25px;
+    font-size: 11px;
     color: #aebbd0;
 }
 
-/* MAIN CONTENT */
+/* MAIN */
 
 .main {
     margin-left: 240px;
@@ -96,8 +99,12 @@ header h1 {
 
 /* PAGE */
 
+.page {
+    display: block;
+}
+
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 /* WELCOME */
@@ -113,10 +120,13 @@ header h1 {
     margin-bottom: 22px;
 }
 
+.welcome h2 {
+    margin-bottom: 10px;
+}
+
 .welcome p {
     color: #d5e0ed;
     font-size: 13px;
-    margin-top: 8px;
 }
 
 /* BUTTONS */
@@ -125,12 +135,12 @@ button {
     cursor: pointer;
 }
 
-button[type=submit],
+button[type="submit"],
 .welcome button,
 .panel-heading button {
     background: #315f9b;
     color: white;
-    border: 0;
+    border: none;
     padding: 12px 17px;
     border-radius: 7px;
     font-weight: bold;
@@ -159,7 +169,7 @@ button[type=submit],
 
 .stat-card p {
     font-size: 13px;
-    color: #8290a2;
+    color: #7c899b;
 }
 
 .stat-card h2 {
@@ -171,9 +181,9 @@ button[type=submit],
 
 .panel {
     background: white;
+    padding: 25px;
+    border-radius: 11px;
     border: 1px solid #e7ebf1;
-    padding: 22px;
-    border-radius: 10px;
     margin-bottom: 20px;
 }
 
@@ -184,6 +194,7 @@ button[type=submit],
 .panel p {
     font-size: 13px;
     color: #8290a2;
+    margin-bottom: 15px;
 }
 
 .panel-heading {
@@ -191,28 +202,6 @@ button[type=submit],
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-}
-
-/* TOOLBAR */
-
-.toolbar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-}
-
-.toolbar input {
-    max-width: 400px;
-    margin: 0;
-}
-
-.secondary {
-    border: 0;
-    background: #eaf0f8;
-    color: #315f9b;
-    padding: 11px 14px;
-    border-radius: 7px;
 }
 
 /* TABLE */
@@ -241,8 +230,6 @@ td {
     border-bottom: 1px solid #edf0f4;
 }
 
-/* REMARKS */
-
 .passed {
     color: #24865c;
     background: #e5f3eb;
@@ -257,10 +244,8 @@ td {
     border-radius: 15px;
 }
 
-/* ACTION BUTTONS */
-
 .action {
-    border: 0;
+    border: none;
     padding: 7px 10px;
     border-radius: 5px;
     margin: 2px;
@@ -271,6 +256,17 @@ td {
 .delete {
     background: #faeaea;
     color: #bd4f4f;
+}
+
+/* SEARCH */
+
+#search {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px;
+    border: 1px solid #dfe5ec;
+    border-radius: 7px;
+    margin-bottom: 18px;
 }
 
 /* FORM */
@@ -288,21 +284,6 @@ input {
     border: 1px solid #dfe5ec;
     border-radius: 6px;
 }
-
-.identity-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-.hint {
-    display: block;
-    color: #8290a2;
-    font-size: 11px;
-    margin-top: 6px;
-}
-
-/* SEMESTER FORM */
 
 .semester-container {
     display: grid;
@@ -339,8 +320,6 @@ input {
     border-radius: 7px;
 }
 
-/* FORM BUTTONS */
-
 .form-buttons {
     display: flex;
     justify-content: flex-end;
@@ -349,13 +328,13 @@ input {
 }
 
 .cancel {
-    border: 0;
+    border: none;
     padding: 12px 17px;
     border-radius: 7px;
     background: #e9edf2;
 }
 
-/* STUDENT DETAILS */
+/* DETAILS */
 
 .detail-section {
     background: #f7f9fc;
@@ -379,28 +358,25 @@ footer {
 
 /* RESPONSIVE DESIGN */
 
-@media(max-width: 900px) {
-
+@media (max-width: 900px) {
     .stats {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .semester-container,
-    .identity-fields {
+    .semester-container {
         grid-template-columns: 1fr;
     }
 }
 
-@media(max-width: 600px) {
-
-    body {
-        display: block;
-    }
-
+@media (max-width: 600px) {
     .sidebar {
         width: 100%;
         height: auto;
         position: relative;
+    }
+
+    body {
+        display: block;
     }
 
     .main {
